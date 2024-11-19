@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Booking Search Bar</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Function to handle date conflicts between departure and return date
+    function handleDateChange() {
+      const departureDate = document.getElementById('departure-date');
+      const returnDate = document.getElementById('return-date');
+
+      returnDate.min = departureDate.value;
+
+      if (returnDate.value && returnDate.value < departureDate.value) {
+        returnDate.value = departureDate.value;
+      }
+    }
+
+    function clearErrorMessage(event) {
+      const errorElement = document.getElementById(`error-${event.target.id}`);
+      if (errorElement) {
+        errorElement.textContent = '';
+      }
+    }
+
+    function validateForm() {
+      const departureError = document.getElementById('error-departure-city');
+      const arrivalError = document.getElementById('error-arrival-city');
+      const departureDateError = document.getElementById('error-departure-date');
+      const returnDateError = document.getElementById('error-return-date');
+
+      departureError.textContent = '';
+      arrivalError.textContent = '';
+      departureDateError.textContent = '';
+      returnDateError.textContent = '';
+
+      let isValid = true;
+
+      const departureCity = document.getElementById('departure-city').value.trim();
+      const arrivalCity = document.getElementById('arrival-city').value.trim();
+      const departureDate = document.getElementById('departure-date').value;
+      const returnDate = document.getElementById('return-date').value;
+
+      if (!departureCity) {
+        departureError.textContent = 'Please enter a departure city.';
+        isValid = false;
+      }
+
+      if (!arrivalCity) {
+        arrivalError.textContent = 'Please enter an arrival city.';
+        isValid = false;
+      }
+
+      if (!departureDate) {
+        departureDateError.textContent = 'Please select a departure date.';
+        isValid = false;
+      }
+
+      if (returnDate && returnDate < departureDate) {
+        returnDateError.textContent = 'Return date cannot be before the departure date.';
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function showLoadingScreen(event) {
+      event.preventDefault();
+
+      if (validateForm()) {
+        const form = document.querySelector('form');
+        const loadingScreen = document.getElementById('loading-screen');
+
+        form.style.display = 'none';
+        loadingScreen.style.display = 'flex';
+
+        setTimeout(() => {
+          form.submit();
+        }, 5000);
+      }
+    }
+    function toggleMenu() {
+  const navLinks = document.getElementById('nav-links');
+  navLinks.classList.toggle('active');
+}
+
+    function resetForm(event) {
+      event.preventDefault();
+
+      const form = document.querySelector('form');
+      const inputs = form.querySelectorAll('input');
+      const errors = form.querySelectorAll('.error-message');
+
+      inputs.forEach(input => {
+        input.value = '';
+      });
+
+      errors.forEach(error => {
+        error.textContent = '';
+      });
+
+      const returnDate = document.getElementById('return-date');
+      returnDate.min = '';
+    }
+
+    window.onload = function() {
+      const departureDate = document.getElementById('departure-date');
+      departureDate.addEventListener('change', handleDateChange);
+
+      const form = document.querySelector('form');
+      form.addEventListener('submit', showLoadingScreen);
+
+      const inputs = document.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.addEventListener('input', clearErrorMessage);
+      });
+
+      const resetButton = document.getElementById('reset-btn');
+      resetButton.addEventListener('click', resetForm);
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentPath = window.location.pathname.split("/").pop();
+      const navLinks = document.querySelectorAll(".nav__links .link");
+
+      navLinks.forEach(link => {
+        const anchor = link.querySelector("a");
+        if (anchor.getAttribute("href") === currentPath) {
+          link.classList.add("active");
+        }
+      });
+    });
+  </script>
+  <style>
+    .nav__links .link a {
+      text-decoration: none;
+      color: #000;
+      font-weight: normal;
+    }
+
+    .nav__links .link.active a {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+      margin-top: 10px;
+    }
+
+    .search-btn, .reset-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .search-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .reset-btn {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .search-btn:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .reset-btn:hover {
+      background-color: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    #loading-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .search-bar {
+        padding: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 10px;
+      }
+
+      .button-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-btn,
+      .reset-btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      input {
+        font-size: 0.9rem;
+        padding: 8px;
+      }
+
+      .search-btn,
+      .reset-btn {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+      }
+    }
+
+    /* Responsive Design */
+@media (max-width: 768px) {
+  /* Adjust navbar for smaller screens */
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menu-icon {
+    display: block;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-left: auto;
+  }
+
+  #nav-links {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    background: #007bff;
+    padding: 10px;
+    position: absolute;
+    top: 60px;
+    left: 0;
+  }
+
+  #nav-links.active {
+    display: flex;
+  }
+
+  #nav-links li {
+    margin: 0;
+  }
+
+  #nav-links li a {
+    color: white;
+  }
+
+  /* Form adjustments for smaller screens */
+  .search-bar {
+    padding: 10px;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+
+  .button-container {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .search-btn,
+  .reset-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Further adjustments for very small screens */
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  input {
+    font-size: 0.9rem;
+  }
+
+  .search-btn,
+  .reset-btn {
+    font-size: 0.9rem;
+  }
+}
+  </style>
+</head>
+<body>
+  <nav id="nav1">
+    <div class="nav__logo">Wingman</div>
+    <ul class="nav__links">
+      <li class="link"><a href=".././index.html">Home</a></li>
+      <li class="link"><a href="search2.html">Book Flight</a></li>
+      <li class="link"><a href=".././destination.html">Destinations</a></li>
+      <li class="link"><a href=".././about.html">About</a></li>
+      <li class="link"><a href=".././help.html">Help/FAQ</a></li>
+    </ul>
+    <a href="../contact.html">
+      <button class="btn">Contact</button>
+    </a>
+  </nav>
+  
+
+  <div id="loading-screen">Searching for flights...</div>
+
+  <div class="search-bar">
+    <form action="../resultsPage/results2.html" method="GET">
+      <div class="form-group">
+        <label for="departure-city">From:</label>
+        <input type="text" id="departure-city" name="departure-city" placeholder="Departure City">
+        <p class="error-message" id="error-departure-city"></p>
+      </div>
+
+      <div class="form-group">
+        <label for="arrival-city">To:</label>
+        <input type="text" id="arrival-city" name="arrival-city" placeholder="Arrival City">
+        <p class="error-message" id="error-arrival-city"></p>
+      </div>
+
+      <div class="form-group">
+        <label for="departure-date">Departure Date:</label>
+        <input type="date" id="departure-date" name="departure-date">
+        <p class="error-message" id="error-departure-date"></p>
+      </div>
+
+      <div class="form-group">
+        <label for="return-date">Return Date:</label>
+        <input type="date" id="return-date" name="return-date">
+        <p class="error-message" id="error-return-date"></p>
+      </div>
+
+      <div class="button-container">
+        <button type="submit" class="search-btn">Search Flights</button>
+        <button type="button" class="reset-btn" id="reset-btn">Reset</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
